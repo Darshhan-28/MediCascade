@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+:root { color-scheme: dark; }
+html, body, #root { height: 100%; }
+body { margin: 0; background: #0b1220; color: #e2e8f0; font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif; }
+
+.react-flow__attribution { display: none; }
+.react-flow__node { font-size: 12px; }
+.flow-supplier { background: #4c1d95; border: 1px solid #a78bfa; color: #ede9fe; border-radius: 12px; padding: 8px 12px; }
+.flow-warehouse { background: #1e3a8a; border: 1px solid #60a5fa; color: #dbeafe; border-radius: 12px; padding: 8px 12px; }
+.flow-stable { background: #064e3b; border: 1px solid #34d399; color: #d1fae5; border-radius: 12px; padding: 8px 12px; }
+.flow-vulnerable { background: #78350f; border: 1px solid #fbbf24; color: #fef3c7; border-radius: 12px; padding: 8px 12px; }
+.flow-high { background: #7f1d1d; border: 1px solid #f87171; color: #fee2e2; border-radius: 12px; padding: 8px 12px; }
+.flow-dim { opacity: 0.35; }
+.flow-selected { box-shadow: 0 0 0 2px #fff; }
+.edge-affected .react-flow__edge-path { stroke: #f87171; stroke-width: 3; }
+.edge-calm .react-flow__edge-path { stroke: #475569; stroke-width: 1.5; }
+
+@keyframes pulse-edge { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+.edge-pulse .react-flow__edge-path { animation: pulse-edge 1.1s ease-in-out infinite; stroke: #fb923c; stroke-width: 3; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 8px; }
