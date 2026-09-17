@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.services.loader import load_all
 from app.services.cascade import (facility_risks, regional_exposure, build_timeline, build_alerts, surplus_list, build_graph, downstream_of, critical_nodes)
+from app.services.forecast import predict_pair
 
 app = FastAPI(title="MediCascade API", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
@@ -103,3 +104,32 @@ def intervention(inp: InterventionIn):
 
 @app.post("/api/reset")
 def reset(): return {"status": "reset", "note": "Stateless prototype — client clears scenario params."}
+
+@app.get("/api/forecast")
+def forecast(facility_id: str = "hA", medicine_id: str = "m_amox", horizon: int = 7):
+    """ML demand forecast only. Never sets risk/cascade/interventions.
+
+    Always returns 200 — on any failure degrades to a labeled naive estimate
+    so the core demo can never break.
+    """
+    try:
+        data = load_all()
+        inv = next((i for i in data["inventory"]
+                    if i["facility_id"] == facility_id and i["medicine_id"] == medicine_id), None)
+        if inv is None:
+            return {"error": "unknown facility/medicine pair", "model": "none"}
+        p = predict_pair(facility_id, medicine_id, horizon)
+        stock, cons = inv["current_stock"], inv["daily_consumption"]
+        return {"facility_id": facility_id, "medicine_id": medicine_id,
+                "current_consumption": cons, "current_stock": stock,
+                "current_coverage_days": round(stock / max(cons, 1e-6), 2),
+                "predicted_daily": p["predicted_daily"], "horizon_days": len(p["daily"]),
+                "daily_forecast": p["daily"],
+                "forecast_coverage_days": round(stock / max(p["predicted_daily"], 1e-6), 2),
+                "mae": p["mae"], "naive_mae": p["naive_mae"], "model": p["model"],
+                "n_train": p["n_train"], "n_test": p["n_test"],
+                "data_source": "Synthetic historical demonstration data — NOT real hospital data",
+                "note": "ML predicts demand only; the deterministic risk engine evaluates shortage risk."}
+    except Exception as exc:
+        return {"facility_id": facility_id, "medicine_id": medicine_id, "error": str(exc),
+                "model": "unavailable", "data_source": "Synthetic historical demonstration data"}

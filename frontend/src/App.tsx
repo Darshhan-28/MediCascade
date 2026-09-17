@@ -5,6 +5,7 @@ import CascadeGraph from "./network/CascadeGraph";
 import ExposureCard from "./components/ExposureCard";
 import Legend from "./components/Legend";
 import FacilityEvidence from "./components/FacilityEvidence";
+import ForecastPanel from "./components/ForecastPanel";
 import Timeline from "./components/Timeline";
 import { baseline, intervene, pingBackend, simulate } from "./services/api";
 import { FACILITIES, MEDICINES, NODE_LABEL, SUPPLIERS } from "./data/synthetic";
@@ -291,6 +292,9 @@ export default function App() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+            </Card>
+            <Card title="Demand Forecast — ML (supports risk display only)" wide>
+              <ForecastPanel />
             </Card>
             <Card title="Other Medicines (baseline)">
               <div className="space-y-1 text-sm">
